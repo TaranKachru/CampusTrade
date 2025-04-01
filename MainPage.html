@@ -91,7 +91,7 @@
       <div id="cart-items"></div>
       <div class="cart-buttons">
         <button onclick="toggleCartModal()">Return to Main Page</button>
-        <button onclick="checkout()">Checkout</button>
+        <button onclick="checkout()">Proceed to Checkout</button>
       </div>
     </div>
   </div>
@@ -259,8 +259,22 @@
     function toggleCartModal() { cartModal.classList.toggle('open'); }
 
     function checkout() {
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
       localStorage.setItem('cartItems', JSON.stringify(cart));
       window.location.href = 'checkout.html';
+    }
+
+    function buyOrRentNow(itemId, action) {
+      const item = items.find(item => item.id == itemId);
+      if (!item) {
+        alert('Item not found!');
+        return;
+      }
+      localStorage.setItem('cartItems', JSON.stringify([item]));
+      window.location.href = 'checkout.html?action=' + action;
     }
 
     function openAccountModal() { accountModal.classList.add('open'); }
@@ -310,7 +324,7 @@
           <p>$${item.price}${item.type === 'rent' ? '/day' : ''}</p>
           <p>${item.distance} away</p>
           <button class="add-to-cart" onclick="addToCart(${JSON.stringify(item).replace(/"/g, '&quot;')}, this)" data-id="${item.id}">Add to Cart</button>
-          <button onclick="window.location.href='checkout.html?itemId=${item.id}&action=${item.type === 'rent' ? 'rent' : 'buy'}'">${item.type === 'rent' ? 'Rent Now' : 'Buy Now'}</button>
+          <button onclick="buyOrRentNow(${item.id}, '${item.type === 'rent' ? 'rent' : 'buy'}')">${item.type === 'rent' ? 'Rent Now' : 'Buy Now'}</button>
         `;
         itemsGrid.appendChild(itemCard);
       });
